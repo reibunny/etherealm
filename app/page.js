@@ -1,12 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import useTypewriter from "./hooks/useTypewriter";
 import { useEffect, useState } from "react";
-import Footer from "./components/Footer";
-import Link from "next/link";
 
-export default function Home() {
+import Footer from "./components/Footer";
+import Contact from "./components/Contact";
+import Home from "./components/Home";
+
+import useTypewriter from "./hooks/useTypewriter";
+import useScrollOnShow from "./hooks/useScrollOnShow";
+
+export default function Main() {
+    // Toggle view on each Section logic
+    const [activeSectionId, setActiveSectionId] = useState(null);
+
+    const homeSectionRef = useScrollOnShow(activeSectionId === "home");
+    const contactSectionRef = useScrollOnShow(activeSectionId === "contact");
+
+    const handleToggleSection = (sectionName) => {
+        setActiveSectionId((prevName) =>
+            prevName === sectionName ? null : sectionName
+        );
+    };
+
+    // Display name onHover logic
     const [isHovered, setIsHovered] = useState(false);
 
     const { displayText: reiText, animationComplete: reiComplete } =
@@ -21,10 +38,31 @@ export default function Home() {
         }
     }, [isHovered, resetAlysonAnimation]);
 
+    useEffect(() => {
+        if (activeSectionId === null) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            // if (homeSectionRef.current) {
+            //     homeSectionRef.current.scrollIntoView({
+            //         behavior: "smooth",
+            //         block: "start",
+            //     });
+            // }
+        }
+    }, [activeSectionId]);
+
     return (
-        <section className="flex items-center justify-center min-h-screen px-4">
-            <div className="flex flex-col items-center justify-center min-h-screen w-full max-w-3xl text-center">
-                <div>
+        <div
+            id="outer-wrapper"
+            className="flex flex-col max-w-3xl mx-auto w-full"
+        >
+            <section
+                id="landing-section"
+                className="flex flex-col items-center justify-center min-h-screen w-full text-center"
+            >
+                <div
+                    id="welcome-text"
+                    className="flex flex-col items-center justify-center min-h-screen text-center"
+                >
                     {/* <Image
                         src="/logo.svg"
                         alt="My logo"
@@ -47,9 +85,9 @@ export default function Home() {
                                         {reiText}
                                     </span>
 
-                                    {!reiComplete && (
+                                    {/* {!reiComplete && (
                                         <span className="animate-blink">|</span>
-                                    )}
+                                    )} */}
                                 </>
                             ) : (
                                 <>
@@ -67,14 +105,39 @@ export default function Home() {
                     <h2 className="text-3xl mb-7">
                         a computer science student
                     </h2>
-                </div>
-                <Link href="/home">
-                    <button className="text-bold rounded px-10 py-3 bg-primary">
+
+                    <button
+                        className="text-bold rounded px-10 py-3 bg-primary"
+                        onClick={() => handleToggleSection("home")}
+                    >
                         Get Started
                     </button>
-                </Link>
-                <Footer />
-            </div>
-        </section>
+                </div>
+            </section>
+
+            <section
+                id="home-section"
+                ref={homeSectionRef}
+                className="min-h-screen w-full p-2"
+            >
+                <Home
+                    show={activeSectionId === "home"}
+                    onClose={() => setActiveSectionId(null)}
+                />
+            </section>
+
+            <section
+                id="contact-section"
+                ref={contactSectionRef}
+                className="min-h-screen w-full p-2"
+            >
+                <Contact
+                    show={activeSectionId === "contact"}
+                    onClose={() => setActiveSectionId(null)}
+                />
+            </section>
+
+            <Footer onShowContact={() => handleToggleSection("contact")} />
+        </div>
     );
 }

@@ -1,20 +1,19 @@
 import React from "react";
 
 import { Github, Linkedin, Mail } from "lucide-react";
-import Link from "next/link";
 
-export default function Footer() {
+export default function Footer({ onShowContact }) {
     return (
-        <section className="absolute bottom-0">
+        <section className="fixed bottom-0 left-0 right-0 w-full text-center">
             <div className="inline-flex gap-4">
-                <Link href="/contact">
+                <button onClick={onShowContact}>
                     <Mail
                         size={40}
                         className="stroke-primary"
                         strokeWidth={2}
                         absoluteStrokeWidth
                     />
-                </Link>
+                </button>
 
                 <a
                     target="_blank"
